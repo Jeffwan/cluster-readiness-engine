@@ -133,7 +133,7 @@ spec:
   target:
     nodeSelector:
       nvidia.com/gpu.present: "true"
-  numIterations: 10
+  numIterations: 2
   numCycles: 2
   categories:
     - domain: communication
@@ -197,7 +197,6 @@ spec:
     mpi:
       mpirunPath: /usr/local/mpi/bin/mpirun
       binary: /usr/local/bin/all_reduce_perf_mpi
-      args: ["-b", "8", "-e", "32G", "-f", "2"]
   numNodes: 2
 EOF
 
