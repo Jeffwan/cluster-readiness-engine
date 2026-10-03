@@ -8,7 +8,8 @@
 #
 #   test_nccl           Certification nccl-cert: every NCCL category, the two
 #                       loopbacks included
-#   test_certification  Certification nemo-cert: NeMo training (nemotron5-8b)
+#   test_certification  Certification nemo-cert: NeMo training (nemotron5-8b).
+#                       Fails for now: training can't tolerate every CSP's taints
 #   test_workloadrun    WorkloadRun my-workload, docs/how-to-guides/run-workloadrun.md
 #
 # The Certifications are the one in docs/getting-started/quick-start.md with
@@ -150,8 +151,17 @@ EOF
   wait_for_success certifications.nvcre.nvidia.com/nccl-cert
 }
 
+# shellcheck disable=SC2317 # The run after the error stays for when it goes.
 test_certification() {
   log "Test 2: Certification, NeMo training"
+
+  # NVCRE cannot run this on every CSP yet. The MPI tests above get a blanket
+  # toleration, but a training workload only tolerates the taints listed in
+  # target.taintSelectors, which also limit it to nodes carrying all of them
+  # (ADR-063). GPU node taints differ from one CSP to the next, so no single
+  # Certification fits them all. The test fails until training workloads can
+  # tolerate them too; then remove the error below.
+  error "NeMo training cannot tolerate the GPU node taints of every CSP yet: it only gets the tolerations in target.taintSelectors (ADR-063)"
 
   # The Certification in docs/getting-started/quick-start.md, with only its NeMo
   # training category.
